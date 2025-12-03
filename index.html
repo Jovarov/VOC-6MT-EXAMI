@@ -1,1 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary Exam</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Verdana, sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .name-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        input[type="text"] {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-primary {
+            background: #e2e8f0; /* Light grey */
+            color: #000000;
+        }
+        
+        .btn-primary:hover {
+            background: #e2e8f0;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-primary:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 16px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        
+        .warning-box strong {
+            display: block;
+            color: #856404;
+            margin-bottom: 8px;
+        }
+        
+        .warning-box ul {
+            margin-left: 20px;
+            color: #856404;
+        }
+        
+        .question-container {
+            margin-bottom: 30px;
+        }
+        
+        .question {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .question-number {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+        
+        .answer-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .success-message {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            color: #48bb78;
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c53030;
+        }
+        
+        .timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .timer.warning {
+            background: #fed7d7;
+            color: #c53030;
+        }
+        
+        #test-screen {
+            display: none;
+        }
+        
+        #submit-screen {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="login-screen">
+        <h1>📝 6 Year Vocabulary Exam AV/MT</h1>
+        <p class="subtitle">Enter your name to begin</p>
+        
+        <div class="name-inputs">
+            <div class="input-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" placeholder="John" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" placeholder="Smith" autocomplete="off">
+            </div>
+        </div>
+        
+        <div class="warning-box">
+            <strong>⚠️ Important Instructions:</strong>
+            <ul>
+                <li>The test will open in fullscreen mode</li>
+                <li>Spell check and autocomplete are disabled</li>
+                <li>Do not switch tabs or exit fullscreen during the test. This will be logged!</li>
+                <li>You can only take this test once</li>
+            </ul>
+        </div>
+        
+        <button class="btn btn-primary" id="startBtn" onclick="startTest()">
+            Start Test in Fullscreen
+        </button>
+        
+        <div id="errorMsg" class="error-message" style="display: none;"></div>
+    </div>
 
+    <div class="container" id="test-screen">
+        <div class="timer" id="timer"></div>
+        
+        <h1>Vocabulary Exam</h1>
+        <p class="subtitle" id="studentName"></p>
+        
+        <div id="questions-container" class="loading">
+            <div class="spinner"></div>
+            <p>Loading questions...</p>
+        </div>
+        
+        <button class="btn btn-success" id="submitBtn" onclick="submitTest()" style="display: none;">
+            Submit Test
+        </button>
+    </div>
+
+    <div class="container" id="submit-screen">
+        <div class="success-message">
+            <div class="success-icon">✓</div>
+            <h1>Thanks! I've got it!</h1>
+            <p class="subtitle">Your answers have been recorded. You may now close your device.</p>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION - Replace this URL with your Google Apps Script web app URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwjqRJvbh9iYFtuLruPnAUfNJec-0i8YrdjJu6Oig1V4hyU8ZylNgOuV5k-fEZodQO/exec';
+        
+        let questions = [];
+        let answers = {};
+        let studentFirstName = '';
+        let studentLastName = '';
+        let startTime;
+        let timerInterval;
+        let tabSwitches = 0;
+        let warnings = 0;
+        let isFraud = false;
+
+        // Check fullscreen and warn on exit
+        document.addEventListener('fullscreenchange', function() {
+            if (!document.fullscreenElement && document.getElementById('test-screen').style.display === 'block' && !isFraud) {
+                warnings++;
+                console.log('Fullscreen exit. Warnings:', warnings);
+                if (warnings >= 3) {
+                    isFraud = true;
+                    alert('⚠️ Welp! You have violated the test rules! This test is now marked as FRAUD and will be submitted automatically.');
+                    setTimeout(() => submitTest(), 3000);
+                } else {
+                    alert(`😡 Oooooh! NAUGHTY!!! You exited fullscreen mode. One more violation and your test will be marked as fraud!`);
+                    enterFullscreen();
+                }
+            }
+        });
+
+        // Detect tab switches
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && document.getElementById('test-screen').style.display === 'block' && !isFraud) {
+                tabSwitches++;
+                warnings++;
+                console.log('Tab switch. Warnings:', warnings);
+                if (warnings >= 3) {
+                    isFraud = true;
+                    alert('⚠️ Welp! You have violated the test rules! This test is now marked as FRAUD and will be submitted automatically.');
+                    setTimeout(() => submitTest(), 3000);
+                } else {
+                    alert(`😡 Oooooh! NAUGHTY!!! Switching tabs/windows is not allowed! One more violation and your test will be marked as fraud!`);
+                }
+            }
+        });
+
+        // Prevent accidental page close
+        window.addEventListener('beforeunload', function(e) {
+            if (document.getElementById('test-screen').style.display === 'block') {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        function enterFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
+
+        async function startTest() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            
+            if (!firstName || !lastName) {
+                showError('Please enter both your first and last name.');
+                return;
+            }
+            
+            studentFirstName = firstName;
+            studentLastName = lastName;
+            
+            // Check if student has already taken the test
+            try {
+                const checkResponse = await fetch(`${SCRIPT_URL}?action=checkStudent&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`);
+                const checkData = await checkResponse.json();
+                
+                if (checkData.alreadyTaken) {
+                    showError('You have already taken this test. If you believe this is an error, please contact your teacher.');
+                    return;
+                }
+            } catch (error) {
+                showError('Unable to connect to the server. Please check your internet connection and try again.');
+                return;
+            }
+            
+            // Enter fullscreen
+            enterFullscreen();
+            
+            // Load questions
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('test-screen').style.display = 'block';
+            document.getElementById('studentName').textContent = `${firstName} ${lastName}`;
+            
+            startTime = new Date();
+            startTimer();
+            
+            await loadQuestions();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(function() {
+                const elapsed = Math.floor((new Date() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                const timerEl = document.getElementById('timer');
+                timerEl.textContent = `⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (elapsed > 1200) { // 20 minutes warning
+                    timerEl.classList.add('warning');
+                }
+            }, 1000);
+        }
+
+        async function loadQuestions() {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getQuestions`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    document.getElementById('questions-container').innerHTML = 
+                        `<div class="error-message">${data.error}</div>`;
+                    return;
+                }
+                
+                questions = data.questions;
+                renderQuestions();
+            } catch (error) {
+                document.getElementById('questions-container').innerHTML = 
+                    '<div class="error-message">Failed to load questions. Please refresh the page and try again.</div>';
+            }
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            container.classList.remove('loading');
+            
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-container';
+                questionDiv.innerHTML = `
+                    <div class="question">
+                        <div class="question-number">Question ${index + 1}</div>
+                        <div class="question-text">${q.sentence}</div>
+                    </div>
+                    <input 
+                        type="text" 
+                        class="answer-input" 
+                        id="answer-${index}"
+                        placeholder="Type your answer here..."
+                        spellcheck="false"
+                        autocomplete="off"
+                        autocorrect="off"
+                        autocapitalize="off"
+                    >
+                `;
+                container.appendChild(questionDiv);
+            });
+            
+            document.getElementById('submitBtn').style.display = 'block';
+        }
+
+        function submitTest() {
+            // Collect answers
+            questions.forEach((q, index) => {
+                const input = document.getElementById(`answer-${index}`);
+                answers[index] = input.value.trim();
+            });
+            
+            // Check if all answers are filled (only if not fraud)
+            if (!isFraud) {
+                const unanswered = questions.filter((q, i) => !answers[i]);
+                if (unanswered.length > 0) {
+                    if (!confirm(`You have ${unanswered.length} unanswered question(s). Submit anyway?`)) {
+                        return;
+                    }
+                }
+            }
+            
+            const endTime = new Date();
+            const duration = Math.floor((endTime - startTime) / 1000);
+            
+            // Prepare question details for the sheet
+            const questionDetails = questions.map((q, index) => ({
+                sentence: q.sentence,
+                correctAnswer: q.correctAnswer,
+                studentAnswer: answers[index] || ''
+            }));
+            
+            // Create a hidden form and submit via iframe (bypasses CORS)
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = SCRIPT_URL;
+            form.target = 'hidden_iframe';
+            form.style.display = 'none';
+            
+            // Add form fields
+            const fields = {
+                firstName: studentFirstName,
+                lastName: studentLastName,
+                answers: JSON.stringify(answers),
+                questionDetails: JSON.stringify(questionDetails),
+                duration: duration,
+                tabSwitches: tabSwitches,
+                warnings: warnings,
+                isFraud: isFraud,
+                timestamp: new Date().toISOString()
+            };
+            
+            for (const [key, value] of Object.entries(fields)) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = value;
+                form.appendChild(input);
+            }
+            
+            // Create hidden iframe if it doesn't exist
+            let iframe = document.getElementById('hidden_iframe');
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.name = 'hidden_iframe';
+                iframe.id = 'hidden_iframe';
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+            }
+            
+            // Listen for iframe load (submission complete)
+            iframe.onload = function() {
+                setTimeout(() => {
+                    clearInterval(timerInterval);
+                    document.getElementById('test-screen').style.display = 'none';
+                    document.getElementById('submit-screen').style.display = 'block';
+                    
+                    // Exit fullscreen
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }, 500);
+            };
+            
+            // Submit the form
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMsg');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
